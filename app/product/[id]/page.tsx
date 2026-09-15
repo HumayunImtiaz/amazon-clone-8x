@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import ProductImageMagnifier from '@/components/ProductImageMagnifier';
 import { ChevronRight, Star, Truck } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import AddToCartButton from '@/components/AddToCartButton';
@@ -48,17 +49,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         {/* Product Image */}
-        <div className="bg-white rounded-lg p-4 flex items-center justify-center border">
-          <div className="relative w-full aspect-square max-w-md">
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          </div>
+        <div className="bg-white rounded-lg p-4 flex items-center justify-center border relative">
+          <ProductImageMagnifier src={product.imageUrl} alt={product.title} />
         </div>
 
         {/* Product Info */}

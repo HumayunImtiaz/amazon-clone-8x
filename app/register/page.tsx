@@ -1,33 +1,37 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import AuthShell from '@/components/AuthShell';
 import { registerUser } from '@/lib/auth-actions';
 
 type FieldErrors = Record<string, string | undefined>;
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
+  const searchParams = useSearchParams();
+  const emailFromUrl = searchParams.get('email') || '';
+
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [serverError, setServerError] = useState('');
 
-  const update = (field: keyof typeof form, value: string) => {
-    setForm((p) => ({ ...p, [field]: value }));
-    setErrors((p) => ({ ...p, [field]: undefined }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setServerError('');
+    setErrors({});
     setLoading(true);
 
-    const result = await registerUser(form);
+    const result = await registerUser({
+      name,
+      email: emailFromUrl,
+      password,
+      confirmPassword,
+    });
 
     if (!result.success) {
       const fieldErrors: FieldErrors = {};
@@ -41,8 +45,8 @@ export default function RegisterPage() {
 
     // Auto sign-in after registration
     const signInResult = await signIn('credentials', {
-      email: form.email,
-      password: form.password,
+      email: emailFromUrl,
+      password,
       redirect: false,
     });
 
@@ -56,129 +60,138 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#EAEDED] flex flex-col items-center pt-8 px-4 pb-16">
-      {/* Logo */}
-      <Link href="/" className="mb-6">
-        <span className="text-3xl font-bold tracking-tight text-[#131921]">
-          <span className="text-[#FF9900]">a</span>mazon
-        </span>
-        <span className="text-[#FF9900] text-sm">.clone</span>
-      </Link>
+    <AuthShell>
+      <div className="w-full max-w-[348px]">
+        <div className="border border-[#D5D9D9] rounded-lg p-6">
+          <h1 className="text-[28px] font-normal text-[#0F1111] mb-4 leading-tight">
+            Create account
+          </h1>
 
-      {/* Card */}
-      <div className="bg-white border border-gray-300 rounded-lg p-8 w-full max-w-sm shadow-sm">
-        <h1 className="text-2xl font-medium text-[#0F1111] mb-6">Create account</h1>
+          {serverError && (
+            <p className="mb-3 text-sm text-red-600">{serverError}</p>
+          )}
 
-        {serverError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded text-sm text-red-700">
-            {serverError}
-          </div>
-        )}
+          <form onSubmit={handleSubmit} id="register-form" className="space-y-3">
+            {/* Email (locked, from URL param) */}
+            <div>
+              <span className="block text-sm font-bold text-[#0F1111]">Email</span>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <span className="text-sm text-[#0F1111]">{emailFromUrl || '—'}</span>
+                <a
+                  href="/login"
+                  className="text-xs text-[#007185] hover:text-[#C7511F] hover:underline"
+                  id="change-email-link"
+                >
+                  Change
+                </a>
+              </div>
+              {errors.email && <p className="text-red-600 text-xs mt-0.5">{errors.email}</p>}
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4" id="register-form">
-          {/* Name */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-[#0F1111] mb-1">
-              Your name
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {/* Your name */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-bold text-[#0F1111] mb-1">
+                Your name
+              </label>
               <input
                 id="name"
                 type="text"
-                value={form.name}
-                onChange={(e) => update('name', e.target.value)}
-                required
+                value={name}
+                onChange={(e) => { setName(e.target.value); setErrors(p => ({ ...p, name: undefined })); }}
                 autoComplete="name"
-                className={`w-full border rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-[#FF9900] ${
-                  errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                }`}
+                autoFocus
                 placeholder="First and last name"
-              />
-            </div>
-            {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#0F1111] mb-1">
-              Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                id="email"
-                type="email"
-                value={form.email}
-                onChange={(e) => update('email', e.target.value)}
-                required
-                autoComplete="email"
-                className={`w-full border rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-[#FF9900] ${
-                  errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
+                  errors.name ? 'border-red-500' : 'border-[#888C8C]'
                 }`}
-                placeholder="you@example.com"
               />
+              {errors.name && <p className="text-red-600 text-xs mt-0.5">{errors.name}</p>}
             </div>
-            {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
-          </div>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[#0F1111] mb-1">
-              Password
-            </label>
-            <p className="text-xs text-gray-500 mb-1">At least 8 characters</p>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {/* Password */}
+            <div>
+              <label htmlFor="password" className="block text-sm font-bold text-[#0F1111] mb-1">
+                Password <span className="font-normal text-[#565959]">(at least 6 characters)</span>
+              </label>
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={form.password}
-                onChange={(e) => update('password', e.target.value)}
-                required
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: undefined })); }}
                 autoComplete="new-password"
-                className={`w-full border rounded-md pl-9 pr-10 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF9900] focus:border-[#FF9900] ${
-                  errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
+                  errors.password ? 'border-red-500' : 'border-[#888C8C]'
                 }`}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+              {errors.password ? (
+                <p className="text-red-600 text-xs mt-0.5">{errors.password}</p>
+              ) : (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <svg className="w-3.5 h-3.5 text-[#007185] shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 7v5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <circle cx="12" cy="16" r="1" fill="white"/>
+                  </svg>
+                  <p className="text-xs text-[#565959]">Passwords must be at least 6 characters.</p>
+                </div>
+              )}
             </div>
-            {errors.password && <p className="text-red-600 text-xs mt-1">{errors.password}</p>}
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            id="register-button"
-            className="w-full py-2.5 px-4 bg-[#FFD814] hover:bg-[#F7CA00] active:bg-[#E6BB00] border border-[#FCD200] rounded-lg text-sm font-medium text-[#0F1111] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Creating account…' : 'Create your Amazon.clone account'}
-          </button>
-        </form>
+            {/* Re-enter password */}
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-bold text-[#0F1111] mb-1">
+                Re-enter password
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirmPassword: undefined })); }}
+                autoComplete="new-password"
+                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-[#888C8C]'
+                }`}
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-600 text-xs mt-0.5">{errors.confirmPassword}</p>
+              )}
+            </div>
 
-        <p className="mt-4 text-xs text-gray-500 leading-snug">
-          By creating an account, you agree to Amazon.clone&apos;s{' '}
-          <span className="text-[#007185] hover:underline cursor-pointer">Conditions of Use</span>{' '}
-          and{' '}
-          <span className="text-[#007185] hover:underline cursor-pointer">Privacy Notice</span>.
-        </p>
+            <button
+              type="submit"
+              disabled={loading}
+              id="register-button"
+              className="w-full py-1.5 px-4 bg-[#FFD814] hover:bg-[#F7CA00] active:bg-[#E6BB00] border border-[#FCD200] rounded-full text-sm font-normal text-[#0F1111] transition-colors disabled:opacity-60 mt-1"
+            >
+              {loading ? 'Creating account…' : 'Continue'}
+            </button>
+
+            <div className="pt-2 border-t border-[#D5D9D9]">
+              <p className="text-sm text-[#0F1111]">
+                Already a customer?{' '}
+                <a href="/login" className="text-[#007185] hover:text-[#C7511F] hover:underline" id="signin-instead-link">
+                  Sign in instead
+                </a>
+              </p>
+            </div>
+          </form>
+
+          <p className="mt-3 text-xs text-[#0F1111] leading-snug">
+            By creating an account, you agree to Amazon&apos;s{' '}
+            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Conditions of Use</a>
+            {' '}and{' '}
+            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Privacy Notice</a>.
+          </p>
+        </div>
       </div>
+    </AuthShell>
+  );
+}
 
-      {/* Sign in link */}
-      <div className="mt-4 text-sm text-[#0F1111]">
-        Already have an account?{' '}
-        <Link href="/login" className="text-[#007185] hover:text-[#C7511F] hover:underline" id="signin-link">
-          Sign in
-        </Link>
-      </div>
-    </div>
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

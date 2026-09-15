@@ -2,13 +2,24 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Trash2, Minus, Plus, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { formatPrice } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, getSubtotal, getItemCount } =
-    useCartStore();
+  const { items, removeItem, updateQuantity, getSubtotal, getItemCount } = useCartStore();
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleCheckout = () => {
+    if (!session?.user) {
+      router.push('/login?callbackUrl=/checkout');
+    } else {
+      router.push('/checkout');
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -78,9 +89,7 @@ export default function CartPage() {
                   <div className="flex items-center gap-3 mt-3">
                     <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                       <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity - 1)
-                        }
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="px-2.5 py-1.5 hover:bg-gray-100 text-gray-600 transition-colors"
                         aria-label="Decrease quantity"
                       >
@@ -90,9 +99,7 @@ export default function CartPage() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() =>
-                          updateQuantity(item.id, item.quantity + 1)
-                        }
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="px-2.5 py-1.5 hover:bg-gray-100 text-gray-600 transition-colors"
                         aria-label="Increase quantity"
                       >
@@ -143,13 +150,18 @@ export default function CartPage() {
               Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'}):{' '}
               <span className="font-bold">{formatPrice(subtotal)}</span>
             </p>
-            <Link
-              href="/checkout"
+            <button
+              onClick={handleCheckout}
               className="block w-full text-center btn-amazon py-3"
               id="proceed-to-checkout"
             >
               Proceed to Checkout
-            </Link>
+            </button>
+            {!session?.user && (
+              <p className="mt-2 text-xs text-center text-gray-500">
+                You&apos;ll be asked to sign in
+              </p>
+            )}
           </div>
         </div>
       </div>
