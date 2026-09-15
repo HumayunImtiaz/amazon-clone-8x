@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
   const itemCount = useCartStore((s) => s.getItemCount());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: session } = useSession();
+  const firstName = session?.user?.name?.split(' ')[0] ?? 'Sign in';
 
   return (
     <header className="bg-[#131921] text-white sticky top-0 z-50">
@@ -54,14 +57,36 @@ export default function Header() {
 
         {/* Right nav */}
         <div className="flex items-center gap-1 lg:gap-3 ml-auto">
-          <Link
-            href="/login"
-            className="hidden sm:flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
-            id="account-link"
-          >
-            <span className="text-gray-300">Hello, sign in</span>
-            <span className="font-bold text-sm">Account & Lists</span>
-          </Link>
+          {session ? (
+            <div className="hidden sm:flex items-center gap-1">
+              <Link
+                href="/account"
+                className="flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
+                id="account-link"
+              >
+                <span className="text-gray-300">Hello, {firstName}</span>
+                <span className="font-bold text-sm">Account &amp; Lists</span>
+              </Link>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="border border-transparent hover:border-white rounded px-2 py-1 flex items-center gap-1 text-xs"
+                id="signout-button"
+                aria-label="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden lg:inline">Sign out</span>
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="hidden sm:flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
+              id="account-link"
+            >
+              <span className="text-gray-300">Hello, Sign in</span>
+              <span className="font-bold text-sm">Account &amp; Lists</span>
+            </Link>
+          )}
 
           <Link
             href="/account"
@@ -69,7 +94,7 @@ export default function Header() {
             id="orders-link"
           >
             <span className="text-gray-300">Returns</span>
-            <span className="font-bold text-sm">& Orders</span>
+            <span className="font-bold text-sm">&amp; Orders</span>
           </Link>
 
           <Link
