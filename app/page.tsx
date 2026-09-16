@@ -2,7 +2,6 @@ import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
 import ProductCarousel from '@/components/ProductCarousel';
 import type { Product } from '@/types';
-import Image from 'next/image';
 import Link from 'next/link';
 import BannerCarousel from '@/components/BannerCarousel';
 
