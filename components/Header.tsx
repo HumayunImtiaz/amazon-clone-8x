@@ -5,9 +5,10 @@ import { Search, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import CheckoutHeader from './CheckoutHeader';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 export default function Header() {
   const itemCount = useCartStore((s) => s.getItemCount());
@@ -17,11 +18,49 @@ export default function Header() {
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] ?? 'Sign in';
   const pathname = usePathname();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
-
+  const [suggestions, setSuggestions] = useState<{ id: string; title: string; imageUrl: string }[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetch(`/api/search?q=${encodeURIComponent(searchQuery.trim())}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.products && data.products.length > 0) {
+            setSuggestions(data.products);
+            setShowDropdown(true);
+          } else {
+            setSuggestions([]);
+            setShowDropdown(false);
+          }
+        })
+        .catch((err) => console.error(err));
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   if (pathname.startsWith('/checkout')) {
@@ -67,31 +106,63 @@ export default function Header() {
         </Link>
 
         {/* Search bar */}
-        <form
-          className="hidden sm:flex flex-1 max-w-3xl"
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <div className="flex w-full rounded-md overflow-hidden">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Amazon.clone"
-              className="flex-1 px-4 py-2 text-black text-sm focus:outline-none"
-              id="search-input"
-            />
-            <button
-              type="submit"
-              className="bg-[#FEBD69] hover:bg-[#F3A847] px-4 flex items-center justify-center"
-              id="search-button"
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5 text-[#131921]" />
-            </button>
-          </div>
-        </form>
+        <div className="hidden sm:flex flex-1 max-w-3xl relative" ref={dropdownRef}>
+          <form
+            className="flex w-full"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchQuery.trim()) {
+                setShowDropdown(false);
+                router.push(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+              }
+            }}
+          >
+            <div className="flex w-full rounded-md overflow-hidden">
+              <input
+                type="text"
+                value={searchQuery}
+                onFocus={() => {
+                  if (suggestions.length > 0) setShowDropdown(true);
+                }}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search Amazon.clone"
+                className="flex-1 px-4 py-2 text-black text-sm focus:outline-none"
+                id="search-input"
+                autoComplete="off"
+              />
+              <button
+                type="submit"
+                className="bg-[#FEBD69] hover:bg-[#F3A847] px-4 flex items-center justify-center"
+                id="search-button"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5 text-[#131921]" />
+              </button>
+            </div>
+          </form>
+
+          {/* Autocomplete Dropdown */}
+          {showDropdown && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-2xl z-50 overflow-hidden text-black">
+              {suggestions.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/product/${product.id}`}
+                  onClick={() => {
+                    setShowDropdown(false);
+                    setSearchQuery('');
+                  }}
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-50 last:border-0"
+                >
+                  <div className="relative w-10 h-10 shrink-0 bg-white flex items-center justify-center rounded">
+                    <Image src={product.imageUrl} alt={product.title} fill className="object-contain mix-blend-multiply p-0.5" sizes="40px" />
+                  </div>
+                  <span className="text-sm font-medium line-clamp-2 flex-1 text-[#0F1111]">{product.title}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Right nav */}
         <div className="flex items-center gap-1 lg:gap-3 ml-auto">
@@ -196,6 +267,10 @@ export default function Header() {
             className="flex mb-3"
             onSubmit={(e) => {
               e.preventDefault();
+              if (searchQuery.trim()) {
+                router.push(`/?search=${encodeURIComponent(searchQuery.trim())}`);
+                setMobileMenuOpen(false);
+              }
             }}
           >
             <div className="flex w-full rounded-md overflow-hidden">

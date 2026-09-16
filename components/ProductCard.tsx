@@ -14,12 +14,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col"
       id={`product-card-${product.id}`}
     >
-      <div className="relative aspect-square bg-gray-50 overflow-hidden">
+      <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden p-2">
         <Image
           src={product.imageUrl}
           alt={product.title}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300 p-2"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
       </div>
