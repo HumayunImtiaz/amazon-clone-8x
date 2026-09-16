@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Amazon.com Clone
 
-## Getting Started
+Amazon.com clone built as a technical assignment.
 
-First, run the development server:
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://amazon-clone-zeta-jet.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Live Deployment
+Check out the live deployed application here: **[https://amazon-clone-zeta-jet.vercel.app/](https://amazon-clone-zeta-jet.vercel.app/)**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Database ORM:** Prisma
+- **Database:** PostgreSQL (Neon)
+- **Authentication:** NextAuth.js
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Key Features
+- **Authentication Flow:** Secure user signup and signin.
+- **Product Browsing:** View categorised products and product details.
+- **Shopping Cart:** Add, remove, and update quantities of items in the cart.
+- **Checkout Process:** Secure checkout flow.
+- **Search:** Fully functional search with autocomplete suggestions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Getting Started Locally
 
-## Learn More
+To run this project on your local machine, follow these steps:
 
-To learn more about Next.js, take a look at the following resources:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Set up environment variables:**
+   Copy the example environment file and fill in the necessary values.
+   ```bash
+   cp .env.example .env
+   ```
+   *(Ensure you provide your Neon database URL and NextAuth secret in the `.env` file.)*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Run database migrations:**
+   ```bash
+   npx prisma db push
+   # or
+   # npx prisma migrate dev
+   ```
 
-## Deploy on Vercel
+4. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:3000`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## About AI Collaboration Logs
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This repository contains a `.agent-logs/` directory. These logs capture the AI collaboration and prompts used during the development of this project.
