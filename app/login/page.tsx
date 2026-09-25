@@ -16,7 +16,7 @@ function LoginForm() {
     setError('');
 
     if (!email.trim()) {
-      setError('Enter your email or mobile phone number');
+      setError('Please enter your email address.');
       return;
     }
 
@@ -25,10 +25,8 @@ function LoginForm() {
       const exists = await checkEmailExists(email.toLowerCase().trim());
       const encoded = encodeURIComponent(email.toLowerCase().trim());
       if (exists) {
-        // Returning user → password page
         router.push(`/login/password?email=${encoded}`);
       } else {
-        // New user → "Looks like you're new" confirmation
         router.push(`/login/new-user?email=${encoded}`);
       }
     } catch {
@@ -39,64 +37,57 @@ function LoginForm() {
 
   return (
     <AuthShell>
-      <div className="w-full max-w-[348px]">
-        {/* Card */}
-        <div className="border border-[#D5D9D9] rounded-lg p-6">
-          <h1 className="text-[28px] font-normal text-[#0F1111] mb-4 leading-tight">
-            Sign in or create account
-          </h1>
+      <div className="w-full max-w-sm">
+        <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-card">
+          <h1 className="text-2xl font-bold text-gray-900 font-heading mb-1">Welcome back</h1>
+          <p className="text-sm text-gray-500 mb-6">Sign in or create a Lumino account</p>
 
-          <form onSubmit={handleContinue} id="login-step-a-form">
-            <label htmlFor="email" className="block text-sm font-bold text-[#0F1111] mb-1">
-              Enter mobile number or email
-            </label>
-
-            {error && (
-              <div className="flex items-start gap-1.5 mb-2">
-                <span className="text-red-600 text-sm leading-snug">{error}</span>
-              </div>
-            )}
-
-            <input
-              id="email"
-              type="text"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              autoComplete="email"
-              autoFocus
-              className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
-                error ? 'border-red-500' : 'border-[#888C8C]'
-              }`}
-            />
+          <form onSubmit={handleContinue} id="login-step-a-form" className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Email address
+              </label>
+              {error && (
+                <p className="text-red-600 text-xs mb-1.5 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                  {error}
+                </p>
+              )}
+              <input
+                id="email"
+                type="text"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                autoComplete="email"
+                autoFocus
+                placeholder="you@example.com"
+                className={`input-lumino ${error ? 'input-lumino-error' : ''}`}
+              />
+            </div>
 
             <button
               type="submit"
               disabled={loading}
               id="continue-button"
-              className="w-full mt-4 py-1.5 px-4 bg-[#FFD814] hover:bg-[#F7CA00] active:bg-[#E6BB00] border border-[#FCD200] rounded-full text-sm font-normal text-[#0F1111] transition-colors disabled:opacity-60"
+              className="btn-primary w-full py-2.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {loading ? 'Checking…' : 'Continue'}
             </button>
           </form>
 
-          <p className="mt-4 text-xs text-[#0F1111] leading-snug">
-            By continuing, you agree to Amazon&apos;s{' '}
-            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Conditions of Use</a>
-            {' '}and{' '}
-            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Privacy Notice</a>.
-          </p>
-
-          <p className="mt-3 text-xs">
-            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Need help?</a>
+          <p className="mt-5 text-xs text-gray-400 leading-relaxed">
+            By continuing, you agree to Lumino&apos;s{' '}
+            <a href="#" className="text-indigo-500 hover:text-indigo-700">Terms of Use</a> and{' '}
+            <a href="#" className="text-indigo-500 hover:text-indigo-700">Privacy Policy</a>.
           </p>
         </div>
 
-        {/* Buying for work */}
-        <div className="mt-5 border-t border-[#D5D9D9] pt-4">
-          <p className="text-sm font-bold text-[#0F1111]">Buying for work?</p>
-          <a href="#" className="text-sm text-[#007185] hover:text-[#C7511F] hover:underline">
-            Create a free business account
-          </a>
+        <div className="mt-5 text-center">
+          <p className="text-sm text-gray-500">
+            New to Lumino?{' '}
+            <a href="/register" className="text-indigo-500 hover:text-indigo-700 font-semibold">
+              Create a free account
+            </a>
+          </p>
         </div>
       </div>
     </AuthShell>

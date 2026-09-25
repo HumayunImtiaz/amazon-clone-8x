@@ -1,56 +1,34 @@
+import { Zap } from 'lucide-react';
+
 /**
- * Shared Amazon-style auth page shell.
- * White background, centered logo with orange smile SVG, card slot, and mini footer.
+ * Lumino auth page shell.
+ * Light indigo-tinted gradient background, centered Lumino wordmark, card slot.
  */
 export default function AuthShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center py-8 px-4" style={{ fontFamily: 'Amazon Ember, Arial, sans-serif' }}>
-      {/* Amazon logo with orange smile */}
-      <a href="/" className="mb-5 block" aria-label="Amazon.clone home">
-        <div className="flex flex-col items-center gap-0">
-          <span
-            className="text-[28px] font-bold tracking-tight text-[#0F1111]"
-            style={{ fontFamily: 'Georgia, serif', letterSpacing: '-0.5px' }}
-          >
-            amazon<span className="text-[#FF9900]">.clone</span>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col items-center py-10 px-4 font-sans">
+      {/* Lumino logo */}
+      <a href="/" className="mb-8 block" aria-label="Lumino home">
+        <span className="inline-flex items-center gap-2 font-heading font-bold text-2xl tracking-tight text-gray-900">
+          <span className="inline-flex items-center justify-center w-8 h-8 bg-indigo-600 rounded-lg shadow-indigo">
+            <Zap className="w-4 h-4 text-white fill-white" />
           </span>
-          {/* Orange smile arc */}
-          <svg width="80" height="10" viewBox="0 0 80 10" fill="none" xmlns="http://www.w3.org/2000/svg" className="-mt-1">
-            <path
-              d="M2 4 Q40 14 78 4"
-              stroke="#FF9900"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d="M70 2 L78 4 L72 8"
-              stroke="#FF9900"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          </svg>
-        </div>
+          Lumino
+        </span>
       </a>
 
-      {/* Page content (card + below-card links) */}
+      {/* Page content */}
       {children}
 
       {/* Auth footer */}
-      <div className="mt-8 w-full max-w-md">
-        <div className="relative flex items-center mb-4">
-          <div className="flex-1 border-t border-gray-300" />
-          <div className="flex-1 border-t border-gray-300" />
+      <div className="mt-10 w-full max-w-sm">
+        <div className="flex justify-center gap-6 text-xs text-gray-400">
+          <a href="#" className="hover:text-indigo-500 transition-colors">Terms of Use</a>
+          <a href="#" className="hover:text-indigo-500 transition-colors">Privacy</a>
+          <a href="#" className="hover:text-indigo-500 transition-colors">Help</a>
         </div>
-        <div className="flex justify-center gap-4 text-xs text-[#007185]">
-          <a href="#" className="hover:underline hover:text-[#C7511F]">Conditions of Use</a>
-          <a href="#" className="hover:underline hover:text-[#C7511F]">Privacy Notice</a>
-          <a href="#" className="hover:underline hover:text-[#C7511F]">Help</a>
-        </div>
-        <p className="text-center text-xs text-gray-500 mt-2">
-          © 1996-2026, Amazon.clone, Inc. or its affiliates
+        <p className="text-center text-xs text-gray-400 mt-2">
+          © {new Date().getFullYear()} Lumino, Inc.
         </p>
       </div>
     </div>

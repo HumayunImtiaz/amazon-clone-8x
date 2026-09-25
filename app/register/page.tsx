@@ -43,7 +43,6 @@ function RegisterForm() {
       return;
     }
 
-    // Auto sign-in after registration
     const signInResult = await signIn('credentials', {
       email: emailFromUrl,
       password,
@@ -61,36 +60,37 @@ function RegisterForm() {
 
   return (
     <AuthShell>
-      <div className="w-full max-w-[348px]">
-        <div className="border border-[#D5D9D9] rounded-lg p-6">
-          <h1 className="text-[28px] font-normal text-[#0F1111] mb-4 leading-tight">
-            Create account
-          </h1>
+      <div className="w-full max-w-sm">
+        <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-card">
+          <h1 className="text-2xl font-bold text-gray-900 font-heading mb-1">Create account</h1>
+          <p className="text-sm text-gray-500 mb-6">Join Lumino and shop smarter.</p>
 
           {serverError && (
-            <p className="mb-3 text-sm text-red-600">{serverError}</p>
+            <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {serverError}
+            </p>
           )}
 
-          <form onSubmit={handleSubmit} id="register-form" className="space-y-3">
-            {/* Email (locked, from URL param) */}
+          <form onSubmit={handleSubmit} id="register-form" className="space-y-4">
+            {/* Email (locked) */}
             <div>
-              <span className="block text-sm font-bold text-[#0F1111]">Email</span>
-              <div className="flex items-baseline gap-2 mt-0.5">
-                <span className="text-sm text-[#0F1111]">{emailFromUrl || '—'}</span>
+              <span className="block text-sm font-semibold text-gray-700 mb-1">Email</span>
+              <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2.5 flex items-center justify-between">
+                <span className="text-sm text-gray-700">{emailFromUrl || '—'}</span>
                 <a
                   href="/login"
-                  className="text-xs text-[#007185] hover:text-[#C7511F] hover:underline"
+                  className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold"
                   id="change-email-link"
                 >
                   Change
                 </a>
               </div>
-              {errors.email && <p className="text-red-600 text-xs mt-0.5">{errors.email}</p>}
+              {errors.email && <p className="text-red-600 text-xs mt-1">{errors.email}</p>}
             </div>
 
-            {/* Your name */}
+            {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-bold text-[#0F1111] mb-1">
+              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Your name
               </label>
               <input
@@ -101,17 +101,15 @@ function RegisterForm() {
                 autoComplete="name"
                 autoFocus
                 placeholder="First and last name"
-                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
-                  errors.name ? 'border-red-500' : 'border-[#888C8C]'
-                }`}
+                className={`input-lumino ${errors.name ? 'input-lumino-error' : ''}`}
               />
-              {errors.name && <p className="text-red-600 text-xs mt-0.5">{errors.name}</p>}
+              {errors.name && <p className="text-red-600 text-xs mt-1">{errors.name}</p>}
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-[#0F1111] mb-1">
-                Password <span className="font-normal text-[#565959]">(at least 6 characters)</span>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Password <span className="font-normal text-gray-400 text-xs">(at least 6 characters)</span>
               </label>
               <input
                 id="password"
@@ -119,28 +117,15 @@ function RegisterForm() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: undefined })); }}
                 autoComplete="new-password"
-                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
-                  errors.password ? 'border-red-500' : 'border-[#888C8C]'
-                }`}
+                className={`input-lumino ${errors.password ? 'input-lumino-error' : ''}`}
               />
-              {errors.password ? (
-                <p className="text-red-600 text-xs mt-0.5">{errors.password}</p>
-              ) : (
-                <div className="flex items-center gap-1.5 mt-1">
-                  <svg className="w-3.5 h-3.5 text-[#007185] shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 7v5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    <circle cx="12" cy="16" r="1" fill="white"/>
-                  </svg>
-                  <p className="text-xs text-[#565959]">Passwords must be at least 6 characters.</p>
-                </div>
-              )}
+              {errors.password && <p className="text-red-600 text-xs mt-1">{errors.password}</p>}
             </div>
 
-            {/* Re-enter password */}
+            {/* Confirm password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-bold text-[#0F1111] mb-1">
-                Re-enter password
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Confirm password
               </label>
               <input
                 id="confirmPassword"
@@ -148,12 +133,10 @@ function RegisterForm() {
                 value={confirmPassword}
                 onChange={(e) => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirmPassword: undefined })); }}
                 autoComplete="new-password"
-                className={`w-full border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E77600] focus:border-[#E77600] ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-[#888C8C]'
-                }`}
+                className={`input-lumino ${errors.confirmPassword ? 'input-lumino-error' : ''}`}
               />
               {errors.confirmPassword && (
-                <p className="text-red-600 text-xs mt-0.5">{errors.confirmPassword}</p>
+                <p className="text-red-600 text-xs mt-1">{errors.confirmPassword}</p>
               )}
             </div>
 
@@ -161,26 +144,25 @@ function RegisterForm() {
               type="submit"
               disabled={loading}
               id="register-button"
-              className="w-full py-1.5 px-4 bg-[#FFD814] hover:bg-[#F7CA00] active:bg-[#E6BB00] border border-[#FCD200] rounded-full text-sm font-normal text-[#0F1111] transition-colors disabled:opacity-60 mt-1"
+              className="btn-primary w-full py-2.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              {loading ? 'Creating account…' : 'Continue'}
+              {loading ? 'Creating account…' : 'Create Account'}
             </button>
 
-            <div className="pt-2 border-t border-[#D5D9D9]">
-              <p className="text-sm text-[#0F1111]">
-                Already a customer?{' '}
-                <a href="/login" className="text-[#007185] hover:text-[#C7511F] hover:underline" id="signin-instead-link">
-                  Sign in instead
+            <div className="pt-4 border-t border-gray-100 text-center">
+              <p className="text-sm text-gray-500">
+                Already have an account?{' '}
+                <a href="/login" className="text-indigo-500 hover:text-indigo-700 font-semibold" id="signin-instead-link">
+                  Sign in
                 </a>
               </p>
             </div>
           </form>
 
-          <p className="mt-3 text-xs text-[#0F1111] leading-snug">
-            By creating an account, you agree to Amazon&apos;s{' '}
-            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Conditions of Use</a>
-            {' '}and{' '}
-            <a href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Privacy Notice</a>.
+          <p className="mt-4 text-xs text-gray-400 leading-relaxed">
+            By creating an account, you agree to Lumino&apos;s{' '}
+            <a href="#" className="text-indigo-500 hover:text-indigo-700">Terms of Use</a> and{' '}
+            <a href="#" className="text-indigo-500 hover:text-indigo-700">Privacy Policy</a>.
           </p>
         </div>
       </div>

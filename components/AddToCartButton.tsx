@@ -25,26 +25,24 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       quantity
     );
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    setTimeout(() => setAdded(false), 2200);
   };
 
   return (
     <div className="space-y-3">
       {/* Quantity selector */}
       <div className="flex items-center gap-2">
-        <label htmlFor="quantity-select" className="text-sm font-medium text-gray-700">
+        <label htmlFor="quantity-select" className="text-sm font-medium text-gray-600">
           Qty:
         </label>
         <select
           id="quantity-select"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
-          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-gray-50 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#FF9900]"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-all cursor-pointer"
         >
           {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
-            <option key={n} value={n}>
-              {n}
-            </option>
+            <option key={n} value={n}>{n}</option>
           ))}
         </select>
       </div>
@@ -52,20 +50,22 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       {/* Add to Cart */}
       <button
         onClick={handleAdd}
-        className={`w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] ${
+        className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
           added
-            ? 'bg-green-600 text-white'
-            : 'bg-gradient-to-b from-[#FFD814] to-[#F7CA00] border border-[#FCD200] text-[#0F1111] hover:from-[#F7CA00] hover:to-[#E7A100]'
+            ? 'bg-emerald-500 text-white scale-[0.99]'
+            : 'bg-indigo-600 hover:bg-indigo-700 text-white hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-indigo'
         }`}
         id="add-to-cart-button"
       >
         {added ? (
           <>
-            <Check className="w-5 h-5" /> Added to Cart
+            <Check className="w-4 h-4 animate-bounce-in" />
+            Added to Cart!
           </>
         ) : (
           <>
-            <ShoppingCart className="w-5 h-5" /> Add to Cart
+            <ShoppingCart className="w-4 h-4" />
+            Add to Cart
           </>
         )}
       </button>
@@ -74,7 +74,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       <a
         href="/cart"
         onClick={handleAdd}
-        className="block w-full text-center py-3 rounded-full text-sm font-medium bg-gradient-to-b from-[#FFA41C] to-[#FF8F00] border border-[#FF8F00] text-white hover:from-[#FA8900] hover:to-[#E47911] transition-all duration-200 active:scale-[0.98]"
+        className="block w-full text-center py-3 rounded-xl text-sm font-semibold border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer"
         id="buy-now-button"
       >
         Buy Now

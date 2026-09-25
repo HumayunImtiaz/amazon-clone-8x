@@ -13,22 +13,28 @@ export default function ProductCarousel({ title, category, products }: ProductCa
   if (!products || products.length === 0) return null;
 
   return (
-    <div className="bg-white p-4 mb-4 border-t border-gray-100">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-xl font-bold text-[#0F1111]">{title}</h2>
+    <section className="mb-10">
+      {/* Section header */}
+      <div className="flex items-center justify-between mb-5 px-1">
+        <h2 className="text-xl font-bold text-gray-900 font-heading">{title}</h2>
         {category && (
-          <Link href={`/?category=${encodeURIComponent(category)}`} className="text-[#007185] hover:text-[#C7511F] hover:underline text-sm font-semibold flex items-center">
-            Shop more <ChevronRight className="w-4 h-4" />
+          <Link
+            href={`/?category=${encodeURIComponent(category)}`}
+            className="text-sm font-semibold text-indigo-500 hover:text-indigo-700 flex items-center gap-0.5 transition-colors"
+          >
+            Shop all <ChevronRight className="w-4 h-4" />
           </Link>
         )}
       </div>
-      <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar">
+
+      {/* Horizontal scroll */}
+      <div className="flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory hide-scrollbar">
         {products.map((product) => (
-          <div key={product.id} className="min-w-[160px] sm:min-w-[200px] max-w-[200px] shrink-0 snap-start">
+          <div key={product.id} className="min-w-[170px] sm:min-w-[210px] max-w-[210px] shrink-0 snap-start">
             <ProductCard product={product} />
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

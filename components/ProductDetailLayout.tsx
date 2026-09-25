@@ -17,7 +17,7 @@ export default function ProductDetailLayout({ product }: Props) {
   return (
     <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
       {/* Product Image */}
-      <div className="bg-white rounded-lg p-4 flex items-center justify-center border relative">
+      <div className="bg-white rounded-2xl p-6 flex items-center justify-center border border-gray-100 shadow-card relative">
         <ProductImageMagnifier
           src={product.imageUrl}
           alt={product.title}
@@ -26,64 +26,74 @@ export default function ProductDetailLayout({ product }: Props) {
       </div>
 
       {/* Product Info */}
-      <div ref={infoColRef}>
-        <h1 className="text-xl lg:text-2xl font-medium text-[#0F1111] mb-2">
+      <div ref={infoColRef} className="space-y-4">
+        {/* Category chip */}
+        <span className="inline-block bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-indigo-100">
+          {product.category}
+        </span>
+
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 font-heading leading-tight">
           {product.title}
         </h1>
 
         {/* Mock rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className={`w-4 h-4 ${i < 4 ? 'text-[#FFA41C] fill-[#FFA41C]' : 'text-gray-300'}`}
+                className={`w-4 h-4 ${i < 4 ? 'text-amber-400 fill-amber-400' : 'text-gray-200 fill-gray-200'}`}
               />
             ))}
           </div>
-          <span className="text-sm text-[#007185] hover:text-[#C7511F] cursor-pointer">
+          <span className="text-sm text-indigo-500 hover:text-indigo-700 cursor-pointer font-medium">
             1,247 ratings
           </span>
         </div>
 
-        <hr className="my-3" />
+        <div className="h-px bg-gray-100" />
 
         {/* Price */}
-        <div className="mb-4">
+        <div>
           <div className="flex items-baseline gap-2">
-            <span className="text-sm text-gray-500">Price:</span>
-            <span className="text-2xl font-medium text-[#B12704]">
+            <span className="text-3xl font-bold text-indigo-600">
               {formatPrice(product.price)}
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">&amp; FREE Returns</p>
+          <p className="text-xs text-gray-400 mt-1">& FREE Returns</p>
         </div>
 
+        {/* In stock */}
+        <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-sm font-semibold px-3 py-1.5 rounded-full border border-emerald-100">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          In Stock
+        </span>
+
         {/* Delivery */}
-        <div className="flex items-center gap-2 mb-4 text-sm">
-          <Truck className="w-5 h-5 text-[#0F1111]" />
+        <div className="flex items-center gap-3 bg-indigo-50 rounded-xl px-4 py-3 border border-indigo-100">
+          <Truck className="w-5 h-5 text-indigo-500 shrink-0" />
           <div>
-            <span className="font-bold">FREE delivery</span>{' '}
-            <span className="font-bold text-[#0F1111]">Tomorrow</span>
-            <p className="text-gray-500 text-xs">Order within 2 hrs 14 mins</p>
+            <span className="text-sm font-bold text-indigo-700">FREE delivery </span>
+            <span className="text-sm font-bold text-gray-800">Tomorrow</span>
+            <p className="text-xs text-gray-500 mt-0.5">Order within 2 hrs 14 mins</p>
           </div>
         </div>
 
-        {/* Stock */}
-        <p className="text-lg text-[#007600] font-medium mb-4">In Stock</p>
-
         {/* Description */}
-        <div className="mb-6">
-          <h2 className="font-bold text-sm mb-2 text-[#0F1111]">About this item</h2>
-          <p className="text-sm text-gray-700 leading-relaxed">{product.description}</p>
+        <div>
+          <h2 className="font-bold text-sm mb-2 text-gray-800 uppercase tracking-wide">About this item</h2>
+          <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
         </div>
 
-        {/* Add to Cart area */}
-        <div className="bg-white border rounded-lg p-4 max-w-xs">
-          <p className="text-2xl font-medium text-[#B12704] mb-3">
+        {/* Add to Cart panel */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-card p-5 max-w-xs">
+          <p className="text-2xl font-bold text-indigo-600 mb-1">
             {formatPrice(product.price)}
           </p>
-          <p className="text-lg text-[#007600] font-medium mb-4">In Stock</p>
+          <span className="inline-flex items-center gap-1.5 text-emerald-700 text-sm font-semibold mb-4">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            In Stock
+          </span>
           <AddToCartButton product={product} />
         </div>
       </div>

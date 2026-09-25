@@ -11,29 +11,37 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/product/${product.id}`}
-      className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col"
+      className="group bg-white rounded-xl border border-gray-100 shadow-card overflow-hidden flex flex-col card-hover"
       id={`product-card-${product.id}`}
     >
-      <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden p-2">
+      {/* Image container */}
+      <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
         <Image
           src={product.imageUrl}
           alt={product.title}
           fill
-          className="object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300 p-2"
+          className="object-contain mix-blend-multiply p-4 group-hover:scale-105 transition-transform duration-300"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
+        {/* Category badge */}
+        <span className="absolute top-2.5 left-2.5 bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-indigo-100">
+          {product.category}
+        </span>
       </div>
-      <div className="p-3 flex flex-col flex-1">
-        <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-[#C7511F] transition-colors">
+
+      {/* Info */}
+      <div className="p-3.5 flex flex-col flex-1">
+        <h3 className="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-indigo-600 transition-colors leading-snug">
           {product.title}
         </h3>
-        <div className="mt-auto pt-2">
-          <span className="text-lg font-bold text-[#0F1111]">
+        <div className="mt-auto pt-3 flex items-center justify-between">
+          <span className="text-base font-bold text-indigo-600">
             {formatPrice(product.price)}
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-1">
-          FREE delivery <span className="font-bold">Tomorrow</span>
+        <p className="text-xs text-emerald-600 mt-1.5 font-medium flex items-center gap-1">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          Free shipping
         </p>
       </div>
     </Link>

@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const product = await prisma.product.findUnique({ where: { id: params.id } });
   if (!product) return { title: 'Product Not Found' };
   return {
-    title: `${product.title} — Amazon.clone`,
+    title: `${product.title} — Lumino`,
     description: product.description,
   };
 }
@@ -27,21 +27,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) notFound();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-sm text-gray-500 mb-6">
-        <Link href="/" className="hover:text-[#C7511F] hover:underline">
+      <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-8">
+        <Link href="/" className="hover:text-indigo-500 transition-colors">
           Home
         </Link>
-        <ChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
         <Link
           href={`/?category=${encodeURIComponent(product.category)}`}
-          className="hover:text-[#C7511F] hover:underline"
+          className="hover:text-indigo-500 transition-colors"
         >
           {product.category}
         </Link>
-        <ChevronRight className="w-3 h-3" />
-        <span className="text-gray-700 line-clamp-1">{product.title}</span>
+        <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+        <span className="text-gray-600 font-medium line-clamp-1">{product.title}</span>
       </nav>
 
       <ProductDetailLayout product={product} />

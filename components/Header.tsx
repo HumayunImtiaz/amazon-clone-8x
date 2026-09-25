@@ -1,14 +1,26 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, LogOut, Zap } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname, useRouter } from 'next/navigation';
 import CheckoutHeader from './CheckoutHeader';
-import { useEffect, useRef } from 'react';
 import Image from 'next/image';
+
+/** Lumino wordmark — indigo spark + bold text */
+function LuminoLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const textClass = size === 'lg' ? 'text-2xl' : size === 'sm' ? 'text-lg' : 'text-xl';
+  return (
+    <span className={`inline-flex items-center gap-1.5 font-heading font-bold tracking-tight ${textClass}`}>
+      <span className="inline-flex items-center justify-center w-6 h-6 bg-indigo-600 rounded-md">
+        <Zap className="w-3.5 h-3.5 text-white fill-white" />
+      </span>
+      <span className="text-gray-900">Lumino</span>
+    </span>
+  );
+}
 
 export default function Header() {
   const itemCount = useCartStore((s) => s.getItemCount());
@@ -23,9 +35,13 @@ export default function Header() {
   const [suggestions, setSuggestions] = useState<{ id: string; title: string; imageUrl: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -34,7 +50,6 @@ export default function Header() {
       setShowDropdown(false);
       return;
     }
-
     const timer = setTimeout(() => {
       fetch(`/api/search?q=${encodeURIComponent(searchQuery.trim())}`)
         .then((res) => res.json())
@@ -49,7 +64,6 @@ export default function Header() {
         })
         .catch((err) => console.error(err));
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -67,46 +81,23 @@ export default function Header() {
     return <CheckoutHeader />;
   }
 
+  const CATEGORIES = ['Electronics', 'Home & Kitchen', 'Clothing', 'Books', 'Beauty'];
+
   return (
-    <header className="bg-[#131921] text-white sticky top-0 z-50">
-      {/* Top bar */}
-      <div className="flex items-center gap-2 px-4 py-2 lg:gap-4">
+    <header
+      className={`bg-white sticky top-0 z-50 transition-shadow duration-200 ${
+        scrolled ? 'shadow-md' : 'shadow-sm border-b border-gray-100'
+      }`}
+    >
+      {/* ── Top bar ── */}
+      <div className="flex items-center gap-3 px-4 py-3 lg:gap-4 max-w-[1600px] mx-auto">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center shrink-0 border border-transparent hover:border-white rounded px-2 py-1 pt-2 pb-1 bg-transparent"
-          aria-label="Amazon.clone home"
-        >
-          <div className="flex flex-col items-start gap-0">
-            <span
-              className="text-xl font-bold tracking-tight text-white leading-none"
-              style={{ fontFamily: 'Georgia, serif', letterSpacing: '-0.5px' }}
-            >
-              amazon<span className="text-[#FF9900] text-[10px] font-sans ml-0.5">.clone</span>
-            </span>
-            {/* Orange smile arc */}
-            <svg width="60" height="8" viewBox="0 0 80 10" fill="none" xmlns="http://www.w3.org/2000/svg" className="-mt-0.5 ml-1">
-              <path
-                d="M2 4 Q40 14 78 4"
-                stroke="#FF9900"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M70 2 L78 4 L72 8"
-                stroke="#FF9900"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          </div>
+        <Link href="/" aria-label="Lumino home" className="shrink-0">
+          <LuminoLogo />
         </Link>
 
         {/* Search bar */}
-        <div className="hidden sm:flex flex-1 max-w-3xl relative" ref={dropdownRef}>
+        <div className="hidden sm:flex flex-1 max-w-2xl relative" ref={dropdownRef}>
           <form
             className="flex w-full"
             onSubmit={(e) => {
@@ -117,47 +108,42 @@ export default function Header() {
               }
             }}
           >
-            <div className="flex w-full rounded-md overflow-hidden">
+            <div className="flex w-full rounded-xl overflow-hidden border border-gray-200 focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
               <input
                 type="text"
                 value={searchQuery}
-                onFocus={() => {
-                  if (suggestions.length > 0) setShowDropdown(true);
-                }}
+                onFocus={() => { if (suggestions.length > 0) setShowDropdown(true); }}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search Amazon.clone"
-                className="flex-1 px-4 py-2 text-black text-sm focus:outline-none"
+                placeholder="Search Lumino..."
+                className="flex-1 px-4 py-2.5 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none transition-colors"
                 id="search-input"
                 autoComplete="off"
               />
               <button
                 type="submit"
-                className="bg-[#FEBD69] hover:bg-[#F3A847] px-4 flex items-center justify-center"
+                className="bg-indigo-600 hover:bg-indigo-700 px-4 flex items-center justify-center transition-colors"
                 id="search-button"
                 aria-label="Search"
               >
-                <Search className="w-5 h-5 text-[#131921]" />
+                <Search className="w-4 h-4 text-white" />
               </button>
             </div>
           </form>
 
           {/* Autocomplete Dropdown */}
           {showDropdown && suggestions.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-2xl z-50 overflow-hidden text-black">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden animate-slide-up">
               {suggestions.map((product) => (
                 <Link
                   key={product.id}
                   href={`/product/${product.id}`}
-                  onClick={() => {
-                    setShowDropdown(false);
-                    setSearchQuery('');
-                  }}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-50 last:border-0"
+                  onClick={() => { setShowDropdown(false); setSearchQuery(''); }}
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
                 >
-                  <div className="relative w-10 h-10 shrink-0 bg-white flex items-center justify-center rounded">
-                    <Image src={product.imageUrl} alt={product.title} fill className="object-contain mix-blend-multiply p-0.5" sizes="40px" />
+                  <div className="relative w-9 h-9 shrink-0 bg-gray-100 flex items-center justify-center rounded-lg overflow-hidden">
+                    <Image src={product.imageUrl} alt={product.title} fill className="object-contain p-1" sizes="36px" />
                   </div>
-                  <span className="text-sm font-medium line-clamp-2 flex-1 text-[#0F1111]">{product.title}</span>
+                  <span className="text-sm font-medium line-clamp-2 flex-1 text-gray-800">{product.title}</span>
                 </Link>
               ))}
             </div>
@@ -165,20 +151,22 @@ export default function Header() {
         </div>
 
         {/* Right nav */}
-        <div className="flex items-center gap-1 lg:gap-3 ml-auto">
+        <div className="flex items-center gap-1 lg:gap-2 ml-auto">
           {session ? (
             <div className="hidden sm:flex items-center gap-1">
               <Link
                 href="/account"
-                className="flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm text-gray-700 font-medium transition-colors"
                 id="account-link"
               >
-                <span className="text-gray-300">Hello, {firstName}</span>
-                <span className="font-bold text-sm">Account &amp; Lists</span>
+                <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center">
+                  <User className="w-4 h-4 text-indigo-600" />
+                </div>
+                <span className="hidden lg:inline">{firstName}</span>
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: '/' })}
-                className="border border-transparent hover:border-white rounded px-2 py-1 flex items-center gap-1 text-xs"
+                className="px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1.5 text-sm"
                 id="signout-button"
                 aria-label="Sign out"
               >
@@ -189,82 +177,83 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="hidden sm:flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-50 text-sm text-gray-700 font-medium transition-colors"
               id="account-link"
             >
-              <span className="text-gray-300">Hello, Sign in</span>
-              <span className="font-bold text-sm">Account &amp; Lists</span>
+              <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center">
+                <User className="w-4 h-4 text-gray-500" />
+              </div>
+              <span className="hidden lg:inline">Sign in</span>
             </Link>
           )}
 
           <Link
             href="/account"
-            className="hidden md:flex flex-col border border-transparent hover:border-white rounded px-2 py-1 text-xs"
+            className="hidden md:flex px-3 py-2 rounded-lg hover:bg-gray-50 text-sm text-gray-600 font-medium transition-colors"
             id="orders-link"
           >
-            <span className="text-gray-300">Returns</span>
-            <span className="font-bold text-sm">&amp; Orders</span>
+            Orders
           </Link>
 
           <Link
             href="/cart"
-            className="flex items-center border border-transparent hover:border-white rounded px-2 py-1 relative"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors relative"
             id="cart-link"
           >
             <div className="relative">
-              <ShoppingCart className="w-7 h-7" />
-              {mounted && (
-                <span className="absolute -top-2 -right-1 bg-[#F08804] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <ShoppingCart className="w-5 h-5 text-gray-700" />
+              {mounted && itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                   {itemCount}
                 </span>
               )}
             </div>
-            <span className="hidden sm:inline font-bold text-sm ml-1">Cart</span>
+            <span className="hidden sm:inline font-medium text-sm text-gray-700">Cart</span>
           </Link>
 
           {/* Mobile menu toggle */}
           <button
-            className="sm:hidden border border-transparent hover:border-white rounded p-1"
+            className="sm:hidden p-2 rounded-lg hover:bg-gray-50 text-gray-600 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Category nav bar */}
-      <nav className="bg-[#232F3E] px-4 py-1 hidden sm:block">
-        <ul className="flex items-center gap-1 text-sm overflow-x-auto">
-          <li key="All" className="flex items-center">
-            <button
-              onClick={() => setDesktopDrawerOpen(true)}
-              className="border border-transparent hover:border-white rounded px-2 py-1 flex items-center gap-1 font-bold whitespace-nowrap focus:outline-none font-sans"
-            >
-              <Menu className="w-5 h-5 -ml-1" />
-              All
-            </button>
-          </li>
-          {['Electronics', 'Home & Kitchen', 'Clothing', 'Books', 'Beauty'].map(
-            (cat) => (
+      {/* ── Category nav ── */}
+      <nav className="hidden sm:block bg-indigo-600 px-4">
+        <div className="max-w-[1600px] mx-auto">
+          <ul className="flex items-center gap-0.5 text-sm overflow-x-auto hide-scrollbar py-1">
+            <li>
+              <button
+                onClick={() => setDesktopDrawerOpen(true)}
+                className="flex items-center gap-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-lg px-3 py-1.5 font-semibold whitespace-nowrap transition-colors focus:outline-none"
+              >
+                <Menu className="w-4 h-4" />
+                All
+              </button>
+            </li>
+            {CATEGORIES.map((cat) => (
               <li key={cat}>
                 <Link
                   href={`/?category=${encodeURIComponent(cat)}`}
-                  className="border border-transparent hover:border-white rounded px-2 py-1 whitespace-nowrap block font-sans"
+                  className="block text-white/85 hover:text-white hover:bg-white/10 rounded-lg px-3 py-1.5 whitespace-nowrap transition-colors"
                 >
                   {cat}
                 </Link>
               </li>
-            )
-          )}
-        </ul>
+            ))}
+          </ul>
+        </div>
       </nav>
 
-      {/* Mobile menu */}
+      {/* ── Mobile menu ── */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-[#232F3E] px-4 py-3 border-t border-gray-600">
+        <div className="sm:hidden bg-white border-t border-gray-100 px-4 py-4 animate-slide-up">
           <form
-            className="flex mb-3"
+            className="flex mb-4"
             onSubmit={(e) => {
               e.preventDefault();
               if (searchQuery.trim()) {
@@ -273,102 +262,95 @@ export default function Header() {
               }
             }}
           >
-            <div className="flex w-full rounded-md overflow-hidden">
+            <div className="flex w-full rounded-xl overflow-hidden border border-gray-200 focus-within:border-indigo-400 transition-all">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search Amazon.clone"
-                className="flex-1 px-4 py-2 text-black text-sm focus:outline-none"
+                placeholder="Search Lumino..."
+                className="flex-1 px-4 py-2.5 text-sm text-gray-900 bg-gray-50 focus:outline-none"
               />
-              <button
-                type="submit"
-                className="bg-[#FEBD69] hover:bg-[#F3A847] px-4 flex items-center"
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5 text-[#131921]" />
+              <button type="submit" className="bg-indigo-600 px-4 flex items-center" aria-label="Search">
+                <Search className="w-4 h-4 text-white" />
               </button>
             </div>
           </form>
-          <div className="flex flex-col gap-2 text-sm">
-            <Link href="/login" className="flex items-center gap-2 py-1" onClick={() => setMobileMenuOpen(false)}>
-              <User className="w-4 h-4" /> Sign In
+          <div className="flex flex-col gap-1 text-sm">
+            <Link href="/login" className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-indigo-50 text-gray-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
+              <User className="w-4 h-4 text-indigo-500" /> Sign In
             </Link>
-            <Link href="/account" className="py-1" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/account" className="px-3 py-2.5 rounded-lg hover:bg-indigo-50 text-gray-700 font-medium" onClick={() => setMobileMenuOpen(false)}>
               Orders
             </Link>
-            <hr className="border-gray-600 my-1" />
-            {['Electronics', 'Home & Kitchen', 'Clothing', 'Books', 'Beauty'].map(
-              (cat) => (
-                <Link
-                  key={cat}
-                  href={`/?category=${encodeURIComponent(cat)}`}
-                  className="py-1"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {cat}
-                </Link>
-              )
-            )}
+            <div className="h-px bg-gray-100 my-1" />
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat}
+                href={`/?category=${encodeURIComponent(cat)}`}
+                className="px-3 py-2.5 rounded-lg hover:bg-indigo-50 text-gray-700"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {cat}
+              </Link>
+            ))}
           </div>
         </div>
       )}
-      
-      {/* Desktop Drawer */}
+
+      {/* ── Desktop Drawer ── */}
       {desktopDrawerOpen && (
-        <div className="fixed inset-0 z-[9999] flex text-black" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+        <div className="fixed inset-0 z-[9999] flex text-gray-900">
           {/* Overlay */}
-          <div 
-            className="fixed inset-0 bg-black/70 drawer-overlay-fade" 
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm drawer-overlay-fade"
             onClick={() => setDesktopDrawerOpen(false)}
-          ></div>
-          
-          {/* Drawer */}
-          <div className="relative w-[365px] bg-white h-full shadow-xl flex flex-col z-10 text-[#111] drawer-slide-in">
-            <button 
+          />
+
+          {/* Drawer panel */}
+          <div className="relative w-[340px] bg-white h-full shadow-2xl flex flex-col z-10 drawer-slide-in">
+            <button
               onClick={() => setDesktopDrawerOpen(false)}
-              className="absolute top-4 -right-[50px] text-white hover:text-gray-200 transition-colors focus:outline-none z-50 cursor-pointer"
+              className="absolute top-4 -right-12 text-white hover:text-gray-200 transition-colors z-50 bg-white/10 rounded-full p-1.5"
               aria-label="Close menu"
             >
-              <X className="w-8 h-8" />
+              <X className="w-6 h-6" />
             </button>
-            <div className="bg-[#232F3E] text-white flex items-center gap-2 px-9 pt-7 pb-4 shrink-0 rounded-tr-[2px]">
-              <User className="w-7 h-7 bg-white text-[#232F3E] rounded-full p-1 border-2 border-transparent" />
-              <span className="font-bold text-[19px] font-sans tracking-wide">Hello, {firstName}</span>
+
+            {/* Drawer header */}
+            <div className="bg-indigo-600 text-white flex items-center gap-3 px-6 pt-6 pb-5">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-lg font-heading">Hello, {firstName}</span>
             </div>
-            
-            <div className="flex-1 overflow-y-auto pb-10 font-sans bg-white relative">
-              <div className="pt-2">
-                <h3 className="text-[18px] font-bold px-9 pt-3 pb-1 text-gray-900 tracking-wide">Trending</h3>
+
+            <div className="flex-1 overflow-y-auto pb-10 bg-white">
+              <div className="pt-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 px-6 pt-4 pb-1">Trending</h3>
                 <ul>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="block px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">Best Sellers</Link></li>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="block px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">New Releases</Link></li>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="block px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">Grocery</Link></li>
+                  {['Best Sellers', 'New Releases', 'Grocery'].map((item) => (
+                    <li key={item}>
+                      <Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="block px-6 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </div>
-              <hr className="my-2 border-gray-300 mx-1" />
+              <div className="h-px bg-gray-100 mx-4 my-2" />
 
               <div>
-                <h3 className="text-[18px] font-bold px-9 pt-4 pb-1 text-gray-900 tracking-wide">Digital Content & Devices</h3>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 px-6 pt-4 pb-1">Shop by Department</h3>
                 <ul>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="flex justify-between items-center px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">Prime Video <span className="text-gray-400 font-light text-2xl leading-none">›</span></Link></li>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="flex justify-between items-center px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">Amazon Music <span className="text-gray-400 font-light text-2xl leading-none">›</span></Link></li>
-                  <li><Link onClick={() => setDesktopDrawerOpen(false)} href="#" className="flex justify-between items-center px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100">Echo & Alexa <span className="text-gray-400 font-light text-2xl leading-none">›</span></Link></li>
-                </ul>
-              </div>
-              <hr className="my-2 border-gray-300 mx-1" />
-
-              <div>
-                <h3 className="text-[18px] font-bold px-9 pt-4 pb-1 text-gray-900 tracking-wide">Shop by Department</h3>
-                <ul>
-                  {['Electronics', 'Home & Kitchen', 'Clothing', 'Books', 'Beauty'].map(cat => (
+                  {CATEGORIES.map((cat) => (
                     <li key={cat}>
-                      <Link 
+                      <Link
                         onClick={() => setDesktopDrawerOpen(false)}
-                        href={`/?category=${encodeURIComponent(cat)}`} 
-                        className="flex justify-between items-center px-9 py-3 text-[14px] text-gray-700 hover:bg-gray-100"
+                        href={`/?category=${encodeURIComponent(cat)}`}
+                        className="flex justify-between items-center px-6 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
                       >
-                        {cat} <span className="text-gray-400 font-light text-2xl leading-none">›</span>
+                        {cat}
+                        <span className="text-gray-300 text-xl leading-none">›</span>
                       </Link>
                     </li>
                   ))}

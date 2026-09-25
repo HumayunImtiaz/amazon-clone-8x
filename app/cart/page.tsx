@@ -23,18 +23,19 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <ShoppingBag className="w-20 h-20 text-gray-300 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-[#0F1111] mb-2">
-          Your Amazon.clone Cart is empty
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <ShoppingBag className="w-10 h-10 text-indigo-400" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3 font-heading">
+          Your Lumino cart is empty
         </h1>
-        <p className="text-gray-500 mb-6">
-          Your shopping cart is waiting. Give it purpose — fill it with groceries,
-          clothing, household supplies, electronics, and more.
+        <p className="text-gray-500 mb-8 max-w-md mx-auto">
+          Looks like you haven't added anything yet. Discover our premium products and find what you're looking for.
         </p>
         <Link
           href="/"
-          className="inline-block btn-amazon px-8 py-3 text-base"
+          className="btn-primary"
           id="continue-shopping"
         >
           Continue Shopping
@@ -47,29 +48,31 @@ export default function CartPage() {
   const itemCount = getItemCount();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="grid lg:grid-cols-[1fr_300px] gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="grid lg:grid-cols-[1fr_340px] gap-8">
         {/* Cart items */}
-        <div className="bg-white rounded-lg border p-6">
-          <h1 className="text-2xl font-bold text-[#0F1111] mb-1">Shopping Cart</h1>
-          <p className="text-sm text-gray-500 text-right mb-2">Price</p>
-          <hr className="mb-4" />
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-6 md:p-8">
+          <div className="flex items-end justify-between mb-2">
+            <h1 className="text-2xl font-bold text-gray-900 font-heading">Shopping Cart</h1>
+            <span className="text-sm font-medium text-gray-500 hidden sm:block">Price</span>
+          </div>
+          <div className="h-px bg-gray-100 mb-6" />
 
-          <div className="divide-y">
+          <div className="divide-y divide-gray-100">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="py-4 flex gap-4"
+                className="py-6 flex gap-6"
                 id={`cart-item-${item.id}`}
               >
                 {/* Image */}
                 <Link href={`/product/${item.id}`} className="shrink-0">
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-gray-50 rounded overflow-hidden">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
                     <Image
                       src={item.imageUrl}
                       alt={item.title}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2 mix-blend-multiply"
                       sizes="128px"
                     />
                   </div>
@@ -79,50 +82,53 @@ export default function CartPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/product/${item.id}`}
-                    className="text-sm sm:text-base font-medium text-[#0F1111] hover:text-[#C7511F] line-clamp-2"
+                    className="text-base sm:text-lg font-bold text-gray-800 hover:text-indigo-600 line-clamp-2 transition-colors leading-tight mb-2"
                   >
                     {item.title}
                   </Link>
-                  <p className="text-sm text-[#007600] mt-1">In Stock</p>
+                  <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-semibold px-2 py-1 rounded-md border border-emerald-100 mb-4">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    In Stock
+                  </span>
 
                   {/* Quantity controls */}
-                  <div className="flex items-center gap-3 mt-3">
-                    <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="px-2.5 py-1.5 hover:bg-gray-100 text-gray-600 transition-colors"
+                        className="px-3 py-1.5 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-colors"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="px-3 py-1.5 text-sm font-medium border-x border-gray-300 bg-gray-50 min-w-[40px] text-center">
+                      <span className="px-3 py-1.5 text-sm font-bold border-x border-gray-200 bg-gray-50 min-w-[44px] text-center text-gray-800">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="px-2.5 py-1.5 hover:bg-gray-100 text-gray-600 transition-colors"
+                        className="px-3 py-1.5 hover:bg-indigo-50 text-gray-600 hover:text-indigo-600 transition-colors"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <span className="text-gray-300">|</span>
+                    <div className="w-px h-6 bg-gray-200 hidden sm:block" />
 
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="text-sm text-[#007185] hover:text-[#C7511F] hover:underline flex items-center gap-1"
+                      className="text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors font-medium group"
                       aria-label="Delete item"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Delete
+                      <Trash2 className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+                      Remove
                     </button>
                   </div>
                 </div>
 
                 {/* Price */}
-                <div className="text-right shrink-0">
-                  <span className="font-bold text-[#0F1111]">
+                <div className="text-right shrink-0 ml-auto">
+                  <span className="text-lg font-bold text-indigo-600">
                     {formatPrice(item.price)}
                   </span>
                 </div>
@@ -130,36 +136,39 @@ export default function CartPage() {
             ))}
           </div>
 
-          <hr className="mt-4" />
-          <div className="text-right pt-4">
-            <span className="text-lg">
-              Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'}):{' '}
-              <span className="font-bold">{formatPrice(subtotal)}</span>
-            </span>
+          <div className="h-px bg-gray-100 mt-2 mb-6" />
+          <div className="text-right flex items-center justify-end gap-3 text-lg">
+            <span className="text-gray-600">Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'}):</span>
+            <span className="text-2xl font-bold text-gray-900">{formatPrice(subtotal)}</span>
           </div>
         </div>
 
         {/* Checkout panel */}
         <div className="lg:self-start">
-          <div className="bg-white border rounded-lg p-5 sticky top-20">
-            <p className="text-sm text-[#007600] mb-3 flex items-center gap-1">
-              <span className="inline-block w-2 h-2 bg-[#007600] rounded-full"></span>
-              Your order qualifies for FREE Shipping
-            </p>
-            <p className="text-lg mb-4">
-              Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'}):{' '}
-              <span className="font-bold">{formatPrice(subtotal)}</span>
-            </p>
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-card p-6 sticky top-24">
+            <div className="flex items-start gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 mb-6">
+              <span className="inline-flex w-5 h-5 bg-emerald-100 rounded-full items-center justify-center mt-0.5 shrink-0">
+                <span className="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+              </span>
+              <p className="font-medium">Your order qualifies for <strong>FREE Shipping</strong></p>
+            </div>
+            
+            <div className="flex flex-col mb-6">
+              <span className="text-gray-500 text-sm mb-1">Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
+              <span className="text-3xl font-bold text-gray-900">{formatPrice(subtotal)}</span>
+            </div>
+
             <button
               onClick={handleCheckout}
-              className="block w-full text-center btn-amazon py-3"
+              className="btn-primary w-full py-3"
               id="proceed-to-checkout"
             >
               Proceed to Checkout
             </button>
+            
             {!session?.user && (
-              <p className="mt-2 text-xs text-center text-gray-500">
-                You&apos;ll be asked to sign in
+              <p className="mt-4 text-xs text-center text-gray-500 font-medium">
+                You&apos;ll be asked to sign in securely
               </p>
             )}
           </div>
