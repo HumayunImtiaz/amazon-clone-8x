@@ -13,6 +13,7 @@ const BANNERS = [
     gradient: 'from-indigo-600 via-indigo-700 to-purple-800',
     imgSrc: '/fall-edit-hero.png',
     imgAlt: 'Fall Edit',
+    videoUrl: 'https://videos.pexels.com/video-files/8195083/8195083-uhd_2560_1440_25fps.mp4',
   },
   {
     href: '/?category=Electronics',
@@ -90,13 +91,26 @@ export default function BannerCarousel() {
             </span>
           </div>
           <div className="flex-1 relative bg-gray-50 overflow-hidden mix-blend-multiply">
-            <Image
-              src={featuredBanner.imgSrc}
-              alt={featuredBanner.imgAlt}
-              fill
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
-              sizes="(max-width: 1200px) 60vw, 800px"
-            />
+            {featuredBanner.videoUrl ? (
+              <video
+                src={featuredBanner.videoUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster={featuredBanner.imgSrc}
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
+            ) : (
+              <Image
+                src={featuredBanner.imgSrc}
+                alt={featuredBanner.imgAlt}
+                fill
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 1200px) 60vw, 800px"
+              />
+            )}
           </div>
         </Link>
         
@@ -151,13 +165,26 @@ export default function BannerCarousel() {
                 </span>
               </div>
               <div className="flex-1 relative overflow-hidden bg-gray-50 mix-blend-multiply">
-                <Image
-                  src={banner.imgSrc}
-                  alt={banner.imgAlt}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 640px) 85vw, 320px"
-                />
+                {banner.videoUrl ? (
+                  <video
+                    src={banner.videoUrl}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    poster={banner.imgSrc}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <Image
+                    src={banner.imgSrc}
+                    alt={banner.imgAlt}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 85vw, 320px"
+                  />
+                )}
               </div>
             </Link>
           ))}
