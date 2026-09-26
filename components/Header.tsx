@@ -84,11 +84,17 @@ export default function Header() {
   const CATEGORIES = ['Electronics', 'Home & Kitchen', 'Clothing', 'Books', 'Beauty'];
 
   return (
-    <header
-      className={`bg-white sticky top-0 z-50 transition-shadow duration-200 ${
-        scrolled ? 'shadow-md' : 'shadow-sm border-b border-gray-100'
-      }`}
-    >
+    <>
+      {/* ── Announcement Bar ── */}
+      <div className="bg-gray-900 text-white text-[11px] sm:text-xs font-medium py-2 px-4 text-center tracking-wide flex justify-center items-center gap-2">
+        <span className="opacity-90">Enjoy free priority shipping on all orders over</span>
+        <span className="font-bold border-b border-white/40 pb-[1px]">$50</span>
+      </div>
+
+      <header
+        className={`bg-white sticky top-0 z-50 transition-shadow duration-200 ${scrolled ? 'shadow-md' : 'shadow-sm border-b border-gray-100'
+          }`}
+      >
       {/* ── Top bar ── */}
       <div className="flex items-center gap-3 px-4 py-3 lg:gap-4 max-w-[1600px] mx-auto">
         {/* Logo */}
@@ -361,5 +367,6 @@ export default function Header() {
         </div>
       )}
     </header>
+    </>
   );
 }

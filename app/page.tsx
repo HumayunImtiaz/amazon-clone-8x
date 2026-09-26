@@ -39,7 +39,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
   /* ── Filtered / search view ── */
   if (category || search) {
     return (
-      <div className="max-w-[1500px] mx-auto px-4 py-8">
+      <div className="max-w-[1500px] mx-auto px-6 py-12">
         {/* Category filter pills */}
         <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 hide-scrollbar">
           <Link
@@ -101,13 +101,13 @@ export default async function HomePage({ searchParams }: HomeProps) {
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen">
-      <div className="max-w-[1500px] mx-auto px-4 pt-6 pb-12">
+      <div className="max-w-[1500px] mx-auto px-6 pt-10 pb-20">
 
         {/* Hero banner section */}
         <BannerCarousel />
 
         {/* Category chips — quick filters */}
-        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1 hide-scrollbar">
+        <div className="flex items-center gap-2 mb-14 overflow-x-auto pb-1 hide-scrollbar">
           {categories.map((cat) => (
             <Link
               key={cat}
