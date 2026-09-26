@@ -31,7 +31,7 @@ export default function CartPage() {
           Your Lumino cart is empty
         </h1>
         <p className="text-gray-500 mb-8 max-w-md mx-auto">
-          Looks like you haven't added anything yet. Discover our premium products and find what you're looking for.
+          Looks like you haven&apos;t added anything yet. Discover our premium products and find what you&apos;re looking for.
         </p>
         <Link
           href="/"

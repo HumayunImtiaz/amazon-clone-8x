@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lock, ChevronRight, Check } from 'lucide-react';
+import { ChevronRight, Check } from 'lucide-react';
 import { useCartStore } from '@/lib/cart-store';
 import { placeOrder } from '@/lib/actions';
 import { formatPrice } from '@/lib/utils';
